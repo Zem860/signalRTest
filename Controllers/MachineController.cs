@@ -1,37 +1,23 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using Test.Models;
-namespace Test.Controller
-{
-    public class MachineController : ControllerBase
-    {
-        private readonly IWebHostEnvironment _env;
+  using Microsoft.AspNetCore.Mvc;
+  using Test.Services;
 
-        public MachineController(IWebHostEnvironment env)
-        {
-            _env = env;
-        }
+  namespace Test.Controllers
+  {
+      [ApiController]
+      [Route("api/[controller]")]
+      public class MachineController : ControllerBase
+      {
+          private readonly MachineDataService _dataService;
 
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var dataPath = Path.Combine(_env.ContentRootPath, "data");
-            var files = Directory.GetFiles(dataPath, "*.json");
-            var machines = new List<Machine>();
-            foreach (var file in files)
-            {
-                var json = System.IO.File.ReadAllText(file);
-                var machine = JsonSerializer.Deserialize<Machine>(json);
-                if (machine != null)
-                {
-                    machines.Add(machine);
-                }
+          public MachineController(MachineDataService dataService)
+          {
+              _dataService = dataService;
+          }
 
-
-            }
-            return Ok(machines);
-        }
-
-
-    }
-}
+          [HttpGet]
+          public IActionResult GetAll()
+          {
+              return Ok(_dataService.GetAll());
+          }
+      }
+  }
