@@ -1,14 +1,162 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>機台監控</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalR測試</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0f1e;
+            color: #e0e6f8;
+            padding: 24px;
+        }
+
+        h2 {
+            margin-bottom: 8px;
+        }
+
+        #status {
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+            background: gray;
+        }
+
+        .dot.ok {
+            background: #00D68F;
+        }
+
+        .dot.err {
+            background: #FF4444;
+        }
+
+        #log {
+            background: #111b38;
+            border: 1px solid #1a2744;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #8b9ec4;
+            min-height: 60px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 700px;
+            font-size: 14px;
+        }
+
+        th {
+            text-align: left;
+            padding: 8px 14px;
+            border-bottom: 1px solid #1a2744;
+            color: #8b9ec4;
+        }
+
+        td {
+            padding: 8px 14px;
+            border-bottom: 1px solid #111b38;
+        }
+
+        .good {
+            color: #00D68F;
+        }
+
+        .warn {
+            color: #FFB400;
+        }
+
+        .danger {
+            color: #FF4444;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>伺服器運作中</h1>
-    <p>API 測試：<a href="/api/machine">/api/machine</a></p>
+    <h2>SignalR即時監控 - 測試頁</h2>
+    <div id="status"> <span class="dot" id="dot"><span id="connText"></span>連線中</span></div>
+    <div id="log">等待事件...</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>機台名稱</th>
+                <th>類型</th>
+                <th>位置</th>
+                <th>狀態</th>
+                <th>最新值</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        function log(msg) {
+            const t = new Date().toLocaleDateString('zh-TW')
+            document.getElementById('log').textContent = `[${t}] ${msg}`;
+        }
+
+        async function loadMachines(params) {
+            const data = await fetch(`api/machine`).then(r => r.json());
+            const tbody = document.getElementById("tbody");
+            tbody.innerHTML = data.map(m => {
+                const last = m.measurements?.at(-1);
+                const cls = m.status === '良好' ? 'good' : m.status === '危險' ? 'danger' : 'warn';
+                return `
+                <tr>
+          <td>${m.machineName}</td>
+          <td>${m.machineType}</td>
+          <td>${m.location}</td>
+          <td class="${cls}">${m.status}</td>
+          <td>${last ? last.value + ' ' + last.unit : '—'}</td>
+        </tr>
+                
+                `
+            }).join('')
+        }
+
+        async function init() {
+            await loadMachines();
+            log(`初始化資料完成，等待signalR`)
+
+            const hub = new signalR.HubConnectionBuilder().withUrl('/machineHub').withAutomaticReconnect().build();
+            hub.on('MachineUpdated', async () => {
+                log('收到 MachineUpdated！重新載入資料...');
+                await loadMachines();
+            });
+            hub.onreconnecting(() => {
+                document.getElementById('dot').className = 'dot';
+                document.getElementById('connText').textContent = '重新連線中...';
+            })
+            hub.onclose(() => {
+                document.getElementById('dot').className = 'dot err';
+                document.getElementById('connText').textContent = "連線中斷";
+            })
+
+            try {
+                await hub.start();
+                document.getElementById('dot').className = 'dot ok';
+                document.getElementById('connText').textContent = '即時同步中';
+                log('SignalR 連線成功，監聽中...');
+            } catch (e) {
+                document.getElementById('dot').className = 'dot err';
+                document.getElementById('connText').textContent = '連線失敗';
+                log('SignalR 連線失敗：' + e.message);
+            }
+        }
+        init();
+    </script>
 </body>
 
 </html>
