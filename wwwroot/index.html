@@ -1,162 +1,338 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
+ <!DOCTYPE html>
+  <html lang="zh-TW" class="bg-gray-950">
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SignalR測試</title>
-    <style>
-        body {
-            font-family: monospace;
-            background: #0a0f1e;
-            color: #e0e6f8;
-            padding: 24px;
-        }
-
-        h2 {
-            margin-bottom: 8px;
-        }
-
-        #status {
-            margin-bottom: 16px;
-            font-size: 14px;
-        }
-
-        .dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 6px;
-            background: gray;
-        }
-
-        .dot.ok {
-            background: #00D68F;
-        }
-
-        .dot.err {
-            background: #FF4444;
-        }
-
-        #log {
-            background: #111b38;
-            border: 1px solid #1a2744;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            color: #8b9ec4;
-            min-height: 60px;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            max-width: 700px;
-            font-size: 14px;
-        }
-
-        th {
-            text-align: left;
-            padding: 8px 14px;
-            border-bottom: 1px solid #1a2744;
-            color: #8b9ec4;
-        }
-
-        td {
-            padding: 8px 14px;
-            border-bottom: 1px solid #111b38;
-        }
-
-        .good {
-            color: #00D68F;
-        }
-
-        .warn {
-            color: #FFB400;
-        }
-
-        .danger {
-            color: #FF4444;
-        }
-    </style>
-</head>
-
-<body>
-    <h2>SignalR即時監控 - 測試頁</h2>
-    <div id="status"> <span class="dot" id="dot"><span id="connText"></span>連線中</span></div>
-    <div id="log">等待事件...</div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>機台名稱</th>
-                <th>類型</th>
-                <th>位置</th>
-                <th>狀態</th>
-                <th>最新值</th>
-            </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-    </table>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <title>機台監控 Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        function log(msg) {
-            const t = new Date().toLocaleDateString('zh-TW')
-            document.getElementById('log').textContent = `[${t}] ${msg}`;
-        }
-
-        async function loadMachines(params) {
-            const data = await fetch(`api/machine`).then(r => r.json());
-            const tbody = document.getElementById("tbody");
-            tbody.innerHTML = data.map(m => {
-                const last = m.measurements?.at(-1);
-                const cls = m.status === '良好' ? 'good' : m.status === '危險' ? 'danger' : 'warn';
-                return `
-                <tr>
-          <td>${m.machineName}</td>
-          <td>${m.machineType}</td>
-          <td>${m.location}</td>
-          <td class="${cls}">${m.status}</td>
-          <td>${last ? last.value + ' ' + last.unit : '—'}</td>
-        </tr>
-                
-                `
-            }).join('')
-        }
-
-        async function init() {
-            await loadMachines();
-            log(`初始化資料完成，等待signalR`)
-
-            const hub = new signalR.HubConnectionBuilder().withUrl('/machineHub').withAutomaticReconnect().build();
-            hub.on('MachineUpdated', async () => {
-                log('收到 MachineUpdated！重新載入資料...');
-                await loadMachines();
-            });
-            hub.onreconnecting(() => {
-                document.getElementById('dot').className = 'dot';
-                document.getElementById('connText').textContent = '重新連線中...';
-            })
-            hub.onclose(() => {
-                document.getElementById('dot').className = 'dot err';
-                document.getElementById('connText').textContent = "連線中斷";
-            })
-
-            try {
-                await hub.start();
-                document.getElementById('dot').className = 'dot ok';
-                document.getElementById('connText').textContent = '即時同步中';
-                log('SignalR 連線成功，監聽中...');
-            } catch (e) {
-                document.getElementById('dot').className = 'dot err';
-                document.getElementById('connText').textContent = '連線失敗';
-                log('SignalR 連線失敗：' + e.message);
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gray: {
+                950: '#060C1A',
+                900: '#0C1328',
+                850: '#111B38',
+                800: '#1A2744',
+              }
             }
+          }
         }
-        init();
+      }
     </script>
-</body>
+    <style>
+      .card-danger { animation: danger-pulse 2s ease-in-out infinite; }
+      @keyframes danger-pulse {
+        0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+        50%      { box-shadow: 0 0 20px 4px rgba(239,68,68,0.25); }
+      }
+      ::-webkit-scrollbar { width: 5px; }
+      ::-webkit-scrollbar-track { background: #060C1A; }
+      ::-webkit-scrollbar-thumb { background: #1A2744; border-radius: 3px; }
+    </style>
+  </head>
+  <body class="text-gray-100 min-h-screen">
 
-</html>
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-gray-950/95 backdrop-blur border-b border-gray-800 h-14 flex items-center px-6 gap-4">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-700 to-blue-400 flex items-center justify-center">
+        <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      </div>
+      <span class="font-bold text-base bg-gradient-to-r from-white to-blue-300 bg-clip-text text-transparent">MachineMonitor</span>
+    </div>
+
+    <div class="ml-auto flex items-center gap-4">
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-800 bg-gray-900 text-xs text-gray-400">
+        <span class="w-2 h-2 rounded-full bg-gray-600" id="connDot"></span>
+        <span id="connText">連線中...</span>
+      </div>
+      <span class="text-xs text-gray-500 tabular-nums" id="clock"></span>
+    </div>
+  </header>
+
+  <!-- Stats Bar -->
+  <div class="flex items-center gap-3 px-6 py-2.5 bg-gray-900 border-b border-gray-800 flex-wrap">
+    <div class="flex items-center gap-2 px-3 py-1 rounded-lg bg-white/5 text-sm">
+      <span class="text-gray-400">總數</span>
+      <span class="font-bold text-lg" id="cTotal">—</span>
+    </div>
+    <div class="flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-sm">
+      <span>●</span><span>良好</span><span class="font-bold text-lg" id="cGood">—</span>
+    </div>
+    <div class="flex items-center gap-2 px-3 py-1 rounded-lg bg-amber-500/10 text-amber-400 text-sm">
+      <span>●</span><span>異常</span><span class="font-bold text-lg" id="cWarn">—</span>
+    </div>
+    <div class="flex items-center gap-2 px-3 py-1 rounded-lg bg-red-500/10 text-red-400 text-sm">
+      <span>●</span><span>危險</span><span class="font-bold text-lg" id="cDanger">—</span>
+    </div>
+    <span class="ml-auto text-xs text-gray-600" id="updateLbl">尚未更新</span>
+  </div>
+
+  <!-- Filter -->
+  <div class="flex gap-2 px-6 py-3 flex-wrap">
+    <select id="fStatus" onchange="applyFilter()"
+      class="bg-gray-900 border border-gray-800 text-gray-300 text-sm rounded-lg px-3 py-1.5 outline-none hover:border-blue-500 cursor-pointer">
+      <option value="">全部狀態</option>
+      <option value="良好">● 良好</option>
+      <option value="異常">● 異常</option>
+      <option value="危險">● 危險</option>
+    </select>
+    <select id="fType" onchange="applyFilter()"
+      class="bg-gray-900 border border-gray-800 text-gray-300 text-sm rounded-lg px-3 py-1.5 outline-none hover:border-blue-500 cursor-pointer">
+      <option value="">全部類型</option>
+    </select>
+    <select id="fLoc" onchange="applyFilter()"
+      class="bg-gray-900 border border-gray-800 text-gray-300 text-sm rounded-lg px-3 py-1.5 outline-none hover:border-blue-500 cursor-pointer">
+      <option value="">全部廠區</option>
+    </select>
+  </div>
+
+  <!-- Cards Grid -->
+  <main class="px-6 pb-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="grid">
+      <div class="col-span-full flex items-center justify-center h-40 text-gray-600 text-sm gap-3">
+        <svg class="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        載入中...
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center" id="overlay">
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col mx-4 shadow-2xl">
+      <div class="flex items-start gap-4 p-5 border-b border-gray-800">
+        <div class="flex-1 min-w-0">
+          <div class="text-lg font-bold" id="mTitle"></div>
+          <div class="flex gap-2 mt-2 flex-wrap" id="mChips"></div>
+        </div>
+        <button onclick="closeModal()"
+          class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:bg-red-500/20 hover:text-red-400
+  hover:border-red-500 transition-colors text-sm">
+          ✕
+        </button>
+      </div>
+      <div class="overflow-y-auto p-5 flex-1">
+        <div id="chartBox" class="w-full h-72"></div>
+        <table class="w-full text-sm mt-4">
+          <thead>
+            <tr class="border-b border-gray-800">
+              <th class="text-left py-2 px-3 text-gray-500 font-medium">時間</th>
+              <th class="text-left py-2 px-3 text-gray-500 font-medium">數值</th>
+              <th class="text-left py-2 px-3 text-gray-500 font-medium">單位</th>
+            </tr>
+          </thead>
+          <tbody id="tBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+  <script>
+  let machines = [], images = {}, chart = null;
+
+  const SC = {
+    '良好': { border: 'border-l-emerald-500', text: 'text-emerald-400', bg: 'bg-emerald-500/10', color: '#10b981', area: 'rgba(16,185,129,' },
+    '異常': { border: 'border-l-amber-500',   text: 'text-amber-400',   bg: 'bg-amber-500/10',   color: '#f59e0b', area: 'rgba(245,158,11,' },
+    '危險': { border: 'border-l-red-500',     text: 'text-red-400',     bg: 'bg-red-500/10',     color: '#ef4444', area: 'rgba(239,68,68,' },
+  };
+
+  async function loadData() {
+    const [ms, imgs] = await Promise.all([
+      fetch('/api/machine').then(r => r.json()),
+      fetch('/images.json').then(r => r.json()).catch(() => ({}))
+    ]);
+    machines = ms; images = imgs;
+    updateStats(); updateFilters(); applyFilter();
+    document.getElementById('updateLbl').textContent = '最後更新：' + new Date().toLocaleTimeString('zh-TW');
+  }
+
+  function updateStats() {
+    const c = s => machines.filter(m => m.status === s).length;
+    document.getElementById('cTotal').textContent  = machines.length;
+    document.getElementById('cGood').textContent   = c('良好');
+    document.getElementById('cWarn').textContent   = c('異常');
+    document.getElementById('cDanger').textContent = c('危險');
+  }
+
+  function updateFilters() {
+    const fill = (id, vals) => {
+      const el = document.getElementById(id), cur = el.value;
+      el.innerHTML = el.options[0].outerHTML +
+        vals.map(v => `<option value="${v}"${v===cur?' selected':''}>${v}</option>`).join('');
+    };
+    fill('fType', [...new Set(machines.map(m => m.machineType))].sort());
+    fill('fLoc',  [...new Set(machines.map(m => m.location))].sort());
+  }
+
+  function applyFilter() {
+    const s = document.getElementById('fStatus').value;
+    const t = document.getElementById('fType').value;
+    const l = document.getElementById('fLoc').value;
+    renderCards(machines.filter(m =>
+      (!s || m.status === s) && (!t || m.machineType === t) && (!l || m.location === l)
+    ));
+  }
+
+  function renderCards(list) {
+    const grid = document.getElementById('grid');
+    if (!list.length) {
+      grid.innerHTML = '<div class="col-span-full flex justify-center items-center h-40 text-gray-600 text-sm">無符合條件的機台</div>';
+      return;
+    }
+    grid.innerHTML = list.map(m => {
+      const sc   = SC[m.status] || SC['良好'];
+      const last = m.measurements?.at(-1);
+      const img  = images[m.machineType]
+        ? `<img src="data:image/svg+xml;base64,${images[m.machineType]}" class="w-full h-full object-contain" alt="">`
+        : `<span class="text-2xl">⚙</span>`;
+      const dangerClass = m.status === '危險' ? 'card-danger' : '';
+      return `
+      <div onclick="openModal('${m.machineId}')"
+        class="bg-gray-900 border border-gray-800 border-l-4 ${sc.border} rounded-xl p-4 cursor-pointer
+               flex flex-col gap-3 hover:-translate-y-1 hover:border-blue-500 transition-all duration-200 ${dangerClass}">
+        <div class="flex gap-3 items-start">
+          <div class="w-14 h-14 rounded-xl bg-gray-850 flex items-center justify-center flex-shrink-0 overflow-hidden">${img}</div>
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-base truncate">${m.machineName}</div>
+            <div class="text-xs text-gray-500 mt-0.5">${m.machineType}</div>
+            <div class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full text-xs font-semibold ${sc.bg} ${sc.text}">
+              <span class="w-1.5 h-1.5 rounded-full" style="background:${sc.color}"></span>
+              ${m.status}
+            </div>
+          </div>
+        </div>
+        ${last ? `
+        <div class="flex items-baseline gap-1.5 bg-gray-950 rounded-lg px-3 py-2">
+          <span class="text-2xl font-black tabular-nums ${sc.text}">${last.value.toFixed(2)}</span>
+          <span class="text-xs text-gray-500">${last.unit}</span>
+          <span class="ml-auto text-xs text-gray-600">最新量測</span>
+        </div>` : ''}
+        <div class="flex items-center gap-1.5 text-xs text-gray-600">
+          <span class="w-1 h-1 rounded-full bg-blue-500"></span>${m.location}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function openModal(id) {
+    const m  = machines.find(x => x.machineId === id);
+    if (!m) return;
+    const sc = SC[m.status] || SC['良好'];
+
+    document.getElementById('mTitle').textContent = m.machineName;
+    document.getElementById('mChips').innerHTML =
+      `<span class="px-3 py-0.5 rounded-full bg-gray-800 text-xs text-gray-400">${m.machineType}</span>
+       <span class="px-3 py-0.5 rounded-full bg-gray-800 text-xs text-gray-400">${m.location}</span>
+       <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold ${sc.bg} ${sc.text}">
+         <span class="w-1.5 h-1.5 rounded-full" style="background:${sc.color}"></span>${m.status}
+       </span>`;
+
+    document.getElementById('tBody').innerHTML =
+      (m.measurements || []).map(r => `
+        <tr class="border-b border-gray-800/50 hover:bg-gray-800/30">
+          <td class="py-2 px-3 text-gray-400">${r.datetime}</td>
+          <td class="py-2 px-3 font-bold ${sc.text}">${r.value.toFixed(2)}</td>
+          <td class="py-2 px-3 text-gray-500">${r.unit}</td>
+        </tr>`).join('');
+
+    const overlay = document.getElementById('overlay');
+    overlay.classList.remove('hidden');
+    overlay.classList.add('flex');
+    setTimeout(() => drawChart(m, sc), 50);
+  }
+
+  function closeModal() {
+    const overlay = document.getElementById('overlay');
+    overlay.classList.add('hidden');
+    overlay.classList.remove('flex');
+    if (chart) { chart.dispose(); chart = null; }
+  }
+
+  function drawChart(m, sc) {
+    const el = document.getElementById('chartBox');
+    if (chart) chart.dispose();
+    chart = echarts.init(el, null, { backgroundColor: 'transparent' });
+    const unit = m.measurements[0]?.unit ?? '';
+    chart.setOption({
+      backgroundColor: 'transparent',
+      grid: { left: 55, right: 16, top: 20, bottom: 60 },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'cross', crossStyle: { color: sc.color, opacity: 0.4 } },
+        backgroundColor: '#0C1328', borderColor: '#1A2744',
+        textStyle: { color: '#e5e7eb' },
+        formatter: p => `<div style="padding:2px 6px">
+          <div style="color:#6b7280;font-size:11px">${p[0].name}</div>
+          <div style="font-size:20px;font-weight:800;color:${sc.color}">${p[0].value.toFixed(2)}
+            <span style="font-size:12px;color:#6b7280;font-weight:400"> ${unit}</span></div></div>`
+      },
+      xAxis: {
+        type: 'category',
+        data: m.measurements.map(r => r.datetime),
+        axisLabel: { color: '#4b5563', fontSize: 11, rotate: 30, interval: 0 },
+        axisLine: { lineStyle: { color: '#1f2937' } },
+        axisTick: { lineStyle: { color: '#1f2937' } },
+        splitLine: { show: false }
+      },
+      yAxis: {
+        type: 'value', name: unit,
+        nameTextStyle: { color: '#4b5563', fontSize: 11 },
+        axisLabel: { color: '#4b5563', fontSize: 11 },
+        axisLine: { show: false }, axisTick: { show: false },
+        splitLine: { lineStyle: { color: '#1f2937', type: 'dashed' } }
+      },
+      series: [{
+        type: 'line',
+        data: m.measurements.map(r => r.value),
+        smooth: 0.35, symbol: 'circle', symbolSize: 6,
+        lineStyle: { color: sc.color, width: 2.5 },
+        itemStyle: { color: sc.color, borderColor: '#0C1328', borderWidth: 2 },
+        areaStyle: {
+          color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [{ offset: 0, color: sc.area + '0.3)' }, { offset: 1, color: sc.area + '0)' }] }
+        }
+      }]
+    });
+    window.addEventListener('resize', () => chart?.resize());
+  }
+
+  async function initSignalR() {
+    const hub = new signalR.HubConnectionBuilder()
+      .withUrl('/machineHub').withAutomaticReconnect().build();
+    hub.on('MachineUpdated', loadData);
+    hub.onreconnecting(() => {
+      document.getElementById('connDot').className = 'w-2 h-2 rounded-full bg-gray-500';
+      document.getElementById('connText').textContent = '重新連線...';
+    });
+    hub.onreconnected(() => {
+      document.getElementById('connDot').className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]';
+      document.getElementById('connText').textContent = '即時同步';
+    });
+    hub.onclose(() => {
+      document.getElementById('connDot').className = 'w-2 h-2 rounded-full bg-red-400';
+      document.getElementById('connText').textContent = '連線中斷';
+    });
+    try {
+      await hub.start();
+      document.getElementById('connDot').className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]';
+      document.getElementById('connText').textContent = '即時同步';
+    } catch {
+      document.getElementById('connDot').className = 'w-2 h-2 rounded-full bg-red-400';
+      document.getElementById('connText').textContent = '連線失敗';
+    }
+  }
+
+  document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  setInterval(() => document.getElementById('clock').textContent = new Date().toLocaleTimeString('zh-TW'), 1000);
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('zh-TW');
+  loadData().then(() => initSignalR());
+  </script>
+  </body>
+  </html>

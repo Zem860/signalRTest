@@ -3,7 +3,7 @@
     "machineName": "印鈔機 A1",
     "machineType": "印鈔機",
     "location": "廠區三",
-    "status": "良好",
+    "status": "危險",
     "imageBase64": "",
     "measurements": [
       { "datetime": "2026-06-24 08:00", "value": 83.38, "unit": "bar" },
