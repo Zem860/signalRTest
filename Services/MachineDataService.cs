@@ -29,7 +29,8 @@ namespace Test.Services
             {
                 _machines.Clear();
                 if (!Directory.Exists(_dataPath)) return;
-                foreach (var file in Directory.GetFiles(_dataPath, "*.json"))
+                var files =  Directory.GetFiles(_dataPath, "machine*.json");
+                foreach (var file in files)
                 {
                     var machine = LoadFile(file);
                     if (machine != null) _machines.Add(machine);

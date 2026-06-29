@@ -1,9 +1,9 @@
  {
-    "machineId": "machine_03",
-    "machineName": "馬達 A1",
-    "machineType": "馬達",
+    "machineId": "machine_05",
+    "machineName": "水泵 M1",
+    "machineType": "水泵",
     "location": "廠區一",
-    "status": "良好",
+    "status": "異常",
     "imageBase64": "motor",
     "measurements": [
       { "datetime": "2026-06-24 08:00", "value": 83.38, "unit": "bar" },

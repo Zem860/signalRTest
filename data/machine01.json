@@ -4,7 +4,7 @@
     "machineType": "壓縮機",
     "location": "廠區一",
     "status": "良好",
-    "imageBase64": "",
+    "imageBase64": "compressor",
     "measurements": [
       { "datetime": "2026-06-24 08:00", "value": 83.38, "unit": "bar" },
       { "datetime": "2026-06-24 09:00", "value": 79.06, "unit": "bar" },

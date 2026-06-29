@@ -27,7 +27,7 @@ namespace Test.Services
                 Directory.CreateDirectory(_dataPath);
             }
 
-            _watcher = new FileSystemWatcher(_dataPath, "*.json")
+            _watcher = new FileSystemWatcher(_dataPath, "machine*.json")
             {
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName,
                 //  LastWrite 檔案內容被修改
