@@ -1,0 +1,20 @@
+﻿{
+  "machineId": "machine_06",
+  "machineName": "風機 F1",
+  "machineType": "風機",
+  "location": "廠區二",
+  "status": "良好",
+  "imageBase64": "fan",
+  "measurements": [
+    { "datetime": "2026-06-24 08:00", "value": 320, "unit": "m³/min" },
+    { "datetime": "2026-06-24 09:00", "value": 318, "unit": "m³/min" },
+    { "datetime": "2026-06-24 10:00", "value": 325, "unit": "m³/min" },
+    { "datetime": "2026-06-24 11:00", "value": 330, "unit": "m³/min" },
+    { "datetime": "2026-06-24 12:00", "value": 328, "unit": "m³/min" },
+    { "datetime": "2026-06-24 13:00", "value": 322, "unit": "m³/min" },
+    { "datetime": "2026-06-24 14:00", "value": 315, "unit": "m³/min" },
+    { "datetime": "2026-06-24 15:00", "value": 319, "unit": "m³/min" },
+    { "datetime": "2026-06-24 16:00", "value": 323, "unit": "m³/min" },
+    { "datetime": "2026-06-24 17:00", "value": 327, "unit": "m³/min" }
+  ]
+}

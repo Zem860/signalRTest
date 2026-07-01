@@ -1,0 +1,20 @@
+﻿{
+  "machineId": "machine_07",
+  "machineName": "壓縮機 A2",
+  "machineType": "壓縮機",
+  "location": "廠區三",
+  "status": "危險",
+  "imageBase64": "compressor",
+  "measurements": [
+    { "datetime": "2026-06-24 08:00", "value": 95.2, "unit": "bar" },
+    { "datetime": "2026-06-24 09:00", "value": 97.1, "unit": "bar" },
+    { "datetime": "2026-06-24 10:00", "value": 99.4, "unit": "bar" },
+    { "datetime": "2026-06-24 11:00", "value": 102.3, "unit": "bar" },
+    { "datetime": "2026-06-24 12:00", "value": 105.8, "unit": "bar" },
+    { "datetime": "2026-06-24 13:00", "value": 108.2, "unit": "bar" },
+    { "datetime": "2026-06-24 14:00", "value": 110.5, "unit": "bar" },
+    { "datetime": "2026-06-24 15:00", "value": 112.1, "unit": "bar" },
+    { "datetime": "2026-06-24 16:00", "value": 113.7, "unit": "bar" },
+    { "datetime": "2026-06-24 17:00", "value": 115, "unit": "bar" }
+  ]
+}

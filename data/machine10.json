@@ -1,0 +1,20 @@
+﻿{
+  "machineId": "machine_10",
+  "machineName": "熱交換器 B1",
+  "machineType": "熱交換器",
+  "location": "廠區二",
+  "status": "異常",
+  "imageBase64": "heat_exchanger",
+  "measurements": [
+    { "datetime": "2026-06-24 08:00", "value": 78.5, "unit": "°C" },
+    { "datetime": "2026-06-24 09:00", "value": 80.2, "unit": "°C" },
+    { "datetime": "2026-06-24 10:00", "value": 82.7, "unit": "°C" },
+    { "datetime": "2026-06-24 11:00", "value": 85.1, "unit": "°C" },
+    { "datetime": "2026-06-24 12:00", "value": 87.4, "unit": "°C" },
+    { "datetime": "2026-06-24 13:00", "value": 89.8, "unit": "°C" },
+    { "datetime": "2026-06-24 14:00", "value": 91.2, "unit": "°C" },
+    { "datetime": "2026-06-24 15:00", "value": 92.5, "unit": "°C" },
+    { "datetime": "2026-06-24 16:00", "value": 93.7, "unit": "°C" },
+    { "datetime": "2026-06-24 17:00", "value": 94.9, "unit": "°C" }
+  ]
+}

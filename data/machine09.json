@@ -1,0 +1,20 @@
+﻿{
+  "machineId": "machine_09",
+  "machineName": "水泵 P2",
+  "machineType": "水泵",
+  "location": "廠區三",
+  "status": "良好",
+  "imageBase64": "pump",
+  "measurements": [
+    { "datetime": "2026-06-24 08:00", "value": 15.2, "unit": "m³/h" },
+    { "datetime": "2026-06-24 09:00", "value": 15.5, "unit": "m³/h" },
+    { "datetime": "2026-06-24 10:00", "value": 15.3, "unit": "m³/h" },
+    { "datetime": "2026-06-24 11:00", "value": 15.7, "unit": "m³/h" },
+    { "datetime": "2026-06-24 12:00", "value": 15.6, "unit": "m³/h" },
+    { "datetime": "2026-06-24 13:00", "value": 15.4, "unit": "m³/h" },
+    { "datetime": "2026-06-24 14:00", "value": 15.8, "unit": "m³/h" },
+    { "datetime": "2026-06-24 15:00", "value": 15.9, "unit": "m³/h" },
+    { "datetime": "2026-06-24 16:00", "value": 15.6, "unit": "m³/h" },
+    { "datetime": "2026-06-24 17:00", "value": 15.4, "unit": "m³/h" }
+  ]
+}

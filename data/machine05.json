@@ -1,20 +1,20 @@
- {
-    "machineId": "machine_05",
-    "machineName": "水泵 M1",
-    "machineType": "水泵",
-    "location": "廠區一",
-    "status": "異常",
-    "imageBase64": "motor",
-    "measurements": [
-      { "datetime": "2026-06-24 08:00", "value": 83.38, "unit": "bar" },
-      { "datetime": "2026-06-24 09:00", "value": 79.06, "unit": "bar" },
-      { "datetime": "2026-06-24 10:00", "value": 81.22, "unit": "bar" },
-      { "datetime": "2026-06-24 11:00", "value": 82.55, "unit": "bar" },
-      { "datetime": "2026-06-24 12:00", "value": 80.93, "unit": "bar" },
-      { "datetime": "2026-06-24 13:00", "value": 84.17, "unit": "bar" },
-      { "datetime": "2026-06-24 14:00", "value": 83.62, "unit": "bar" },
-      { "datetime": "2026-06-24 15:00", "value": 81.09, "unit": "bar" },
-      { "datetime": "2026-06-24 16:00", "value": 82.44, "unit": "bar" },
-      { "datetime": "2026-06-24 17:00", "value": 83.01, "unit": "bar" }
-    ]
-  }
+﻿{
+  "machineId": "machine_05",
+  "machineName": "水泵 P1",
+  "machineType": "水泵",
+  "location": "廠區二",
+  "status": "異常",
+  "imageBase64": "pump",
+  "measurements": [
+    { "datetime": "2026-06-24 08:00", "value": 12.4, "unit": "m³/h" },
+    { "datetime": "2026-06-24 09:00", "value": 11.8, "unit": "m³/h" },
+    { "datetime": "2026-06-24 10:00", "value": 10.5, "unit": "m³/h" },
+    { "datetime": "2026-06-24 11:00", "value": 9.2, "unit": "m³/h" },
+    { "datetime": "2026-06-24 12:00", "value": 8.7, "unit": "m³/h" },
+    { "datetime": "2026-06-24 13:00", "value": 7.9, "unit": "m³/h" },
+    { "datetime": "2026-06-24 14:00", "value": 7.1, "unit": "m³/h" },
+    { "datetime": "2026-06-24 15:00", "value": 6.8, "unit": "m³/h" },
+    { "datetime": "2026-06-24 16:00", "value": 6.2, "unit": "m³/h" },
+    { "datetime": "2026-06-24 17:00", "value": 5.9, "unit": "m³/h" }
+  ]
+}

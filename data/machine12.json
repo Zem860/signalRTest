@@ -1,0 +1,20 @@
+﻿{
+  "machineId": "machine_12",
+  "machineName": "壓縮機 A3",
+  "machineType": "壓縮機",
+  "location": "廠區三",
+  "status": "良好",
+  "imageBase64": "compressor",
+  "measurements": [
+    { "datetime": "2026-06-24 08:00", "value": 80.1, "unit": "bar" },
+    { "datetime": "2026-06-24 09:00", "value": 81.3, "unit": "bar" },
+    { "datetime": "2026-06-24 10:00", "value": 80.8, "unit": "bar" },
+    { "datetime": "2026-06-24 11:00", "value": 82, "unit": "bar" },
+    { "datetime": "2026-06-24 12:00", "value": 81.5, "unit": "bar" },
+    { "datetime": "2026-06-24 13:00", "value": 80.9, "unit": "bar" },
+    { "datetime": "2026-06-24 14:00", "value": 81.7, "unit": "bar" },
+    { "datetime": "2026-06-24 15:00", "value": 82.3, "unit": "bar" },
+    { "datetime": "2026-06-24 16:00", "value": 81.9, "unit": "bar" },
+    { "datetime": "2026-06-24 17:00", "value": 82.5, "unit": "bar" }
+  ]
+}

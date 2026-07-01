@@ -1,0 +1,20 @@
+﻿{
+  "machineId": "machine_15",
+  "machineName": "熱交換器 C1",
+  "machineType": "熱交換器",
+  "location": "廠區四",
+  "status": "良好",
+  "imageBase64": "heat_exchanger",
+  "measurements": [
+    { "datetime": "2026-06-24 08:00", "value": 55.2, "unit": "°C" },
+    { "datetime": "2026-06-24 09:00", "value": 55.8, "unit": "°C" },
+    { "datetime": "2026-06-24 10:00", "value": 56.1, "unit": "°C" },
+    { "datetime": "2026-06-24 11:00", "value": 55.9, "unit": "°C" },
+    { "datetime": "2026-06-24 12:00", "value": 56.3, "unit": "°C" },
+    { "datetime": "2026-06-24 13:00", "value": 56, "unit": "°C" },
+    { "datetime": "2026-06-24 14:00", "value": 55.7, "unit": "°C" },
+    { "datetime": "2026-06-24 15:00", "value": 56.2, "unit": "°C" },
+    { "datetime": "2026-06-24 16:00", "value": 55.9, "unit": "°C" },
+    { "datetime": "2026-06-24 17:00", "value": 56.4, "unit": "°C" }
+  ]
+}
